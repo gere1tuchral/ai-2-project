@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         String    @id @unique @default(uuid())
+  isVerified Boolean   @default(false)
+  email      String    @unique
+  name       String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  clerkId    String?
+  articles   Article[]
+}
+
+model Article {
+  id        String   @id @unique @default(uuid())
+  title     String
+  content   String
+  clerkId   String?
+  createdAt DateTime @default(now())
+  summary   String
+  updateAt  DateTime @updatedAt
+  userId    String?
+  user      User?     @relation(fields: [userId], references: [id])
+  quizzes   Quiz[]
+  scores    Score[]
+}
+
+model Quiz {
+  id        String   @id @default(uuid())
+  clerkId   String?
+  question  String
+  options   String[]
+  answer    Int
+  articleId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  article   Article  @relation(fields: [articleId], references: [id])
+}
+
+model Score {
+  id        String   @id @default(uuid())
+  clerkId   String?
+  articleId String
+  score     Int
+  timeSpent Int      @default(0)
+  createdAt DateTime @default(now())
+  article   Article?  @relation(fields: [articleId], references: [id])
+}
